@@ -60,12 +60,14 @@ def thread_worker(args):
             if r.status_code == 200 and "X-MailboxGuid" in r.headers.keys():
                 print("VALID: ", email)
                 if args.output is not None:
-                    print_queue.put(email)
+                    args.output.write(email + "\n")
+                    args.output.flush()
             elif r.status_code == 302:
                 if domain_is_o365[domain] and 'outlook.office365.com' not in r.text:
                     print("VALID: ", email)
                     if args.output is not None:
-                        print_queue.put(email)
+                        args.output.write(email + "\n")
+                        args.output.flush()
             else:
                 if args.verbose:
                     print("INVALID: ", email)
@@ -80,7 +82,6 @@ def print_worker(args):
             toPrint = print_queue.get()
             if toPrint == 'done':
                 return
-            args.output.write(toPrint + "\n")
 
 
 def main():
